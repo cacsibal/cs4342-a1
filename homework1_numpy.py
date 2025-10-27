@@ -7,19 +7,19 @@ def problem2 (A):
     return np.ones((np.shape(A)[0], 1), dtype=int)
 
 def problem3 (A):
-    return ...
+    return np.identity(np.shape(A)[0], dtype=int)
 
 def problem4 (A, i):
-    return ...
+    return np.sum(A, axis=1)[i]
 
 def problem5 (A, c, d):
-    return ...
+    return np.mean(A[(A >= c) & (A <= d)])
 
 def problem6 (A, k):
     return ...
 
 def problem7 (A, x):
-    return ...
+    return np.linalg.solve(A, x)
 
 def problem8 (x, k):
     return ...
