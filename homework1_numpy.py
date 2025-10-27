@@ -1,10 +1,10 @@
 import numpy as np
 
 def problem1 (A, B, C):
-    return ...
+    return A @ B - C
 
 def problem2 (A):
-    return ...
+    return np.ones((np.shape(A)[0], 1), dtype=int)
 
 def problem3 (A):
     return ...
