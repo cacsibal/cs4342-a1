@@ -2,11 +2,28 @@ import numpy as np
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 
-def fPC (y, yhat):
-    pass
+"""
+calculates the percent of guesses correct
 
-def measureAccuracyOfPredictors (predictors, X, y):
-    pass
+yhat: predicted guess vector
+y: ground truth vector
+
+returns a float between [0, 1] representing the percentage of correct guesses
+"""
+def fPC (y, yhat) -> float:
+    return sum(1 for true, pred in zip(y, yhat) if true == pred) / len(y)
+
+"""
+idk what this does yet
+
+predictors: a list of predictors in the form (r1, c1, r2, c2)
+X: a 3D array
+y: ground truth vector
+
+returns 
+"""
+def measureAccuracyOfPredictors (predictors, X, y) -> list[float]:
+    return [fPC(y, predictors(image)) for image in X]
 
 def stepwiseRegression (trainingFaces, trainingLabels, testingFaces, testingLabels):
     show = False
