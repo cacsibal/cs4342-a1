@@ -60,7 +60,7 @@ def stepwiseRegression (trainingFaces, trainingLabels, testingFaces, testingLabe
         for c1 in range(24):
             for r2 in range(24):
                 for c2 in range(24):
-                    if not (r1 == r2 and c1 == r2):
+                    if not (r1 == r2 and c1 == c2):
                         all_predictors.append((r1, c1, r2, c2))
 
     for iteration in range(6):
@@ -111,7 +111,7 @@ if __name__ == "__main__":
     testingFaces, testingLabels = loadData("test")
     trainingFaces, trainingLabels = loadData("train")
 
-    print(stepwiseRegression(trainingFaces, trainingLabels, testingFaces, testingLabels))
+    machine = stepwiseRegression(trainingFaces, trainingLabels, testingFaces, testingLabels)
 
     # for _ in range(10000):
     #     r1, c1 = random.randint(0, 23), random.randint(0, 23)
