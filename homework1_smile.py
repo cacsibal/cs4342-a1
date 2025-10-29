@@ -33,12 +33,15 @@ y: ground truth vector
 returns 
 """
 def measureAccuracyOfPredictors (predictors, X, y):
-    yhat = []
-    for x in X:
-        predictions = np.array([g_j(x) for g_j in predictors])
-        yhat.append(1 if np.mean(predictions) >= 0.5 else 0)
+    accuracies = []
 
-    return fPC(y, yhat)
+    for i, g_j in enumerate(predictors):
+        if i % 10000 == 0:
+            print(f"Done with {i} predictors")
+        predictions = np.array([g_j(x) for x in X])
+        accuracies.append(fPC(y, predictions))
+
+    return accuracies
 
 def stepwiseRegression (trainingFaces, trainingLabels, testingFaces, testingLabels):
     show = False
@@ -71,13 +74,19 @@ if __name__ == "__main__":
 
     predictors = []
 
-    for _ in range(10000):
-        r1, c1 = random.randint(0, 23), random.randint(0, 23)
-        r2, c2 = random.randint(0, 23), random.randint(0, 23)
-        if not (r1 == r2 and c1 == c2):  # Skip same pixel
-            predictors.append(make_predictor(r1, c1, r2, c2))
+    for r1 in range(24):
+        for c1 in range(24):
+            for r2 in range(24):
+                for c2 in range(24):
+                    predictors.append(make_predictor(r1, c1, r2, c2))
 
-    print(measureAccuracyOfPredictors(predictors, trainingFaces, trainingLabels))
+    # for _ in range(10000):
+    #     r1, c1 = random.randint(0, 23), random.randint(0, 23)
+    #     r2, c2 = random.randint(0, 23), random.randint(0, 23)
+    #     if not (r1 == r2 and c1 == c2):
+    #         predictors.append(make_predictor(r1, c1, r2, c2))
+
+    print(max(measureAccuracyOfPredictors(predictors, trainingFaces, trainingLabels)))
 
     # print(testingFaces.shape)
     # print(vectorize_images(testingFaces).shape)
