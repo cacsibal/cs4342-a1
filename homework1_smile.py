@@ -15,14 +15,6 @@ returns a float between [0, 1] representing the percentage of correct guesses
 def fPC (y, yhat):
     return np.sum(y == yhat) / len(y)
 
-def vectorize_images(X):
-    n, m, _ = X.shape
-    return X.reshape(n, m * m).T
-
-def get_flattened_index(coord):
-    i, j = coord
-    return i * 24 + j
-
 """
 idk what this does yet
 
@@ -83,7 +75,7 @@ def stepwiseRegression (trainingFaces, trainingLabels, testingFaces, testingLabe
         selected_predictors.append(best_predictor)
         all_predictors.remove(best_predictor)
 
-    show = True
+    show = False
     if show:
         for r1, c1, r2, c2 in selected_predictors:
             # Show an arbitrary test image in grayscale
@@ -107,22 +99,33 @@ def loadData (which):
     labels = np.load("{}ingLabels.npy".format(which))
     return faces, labels
 
+def run_on_n_faces(n, trainingFaces, trainingLabels, testingFaces, testingLabels):
+    machine = stepwiseRegression(trainingFaces[:n], trainingLabels[:n], testingFaces, testingLabels)
+
+    output = [n]
+
+    for faces, labels in [(trainingFaces, trainingLabels), (testingFaces, testingLabels)]:
+        yhat = []
+
+        for x in faces:
+            guesses = []
+            for r1, c1, r2, c2 in machine:
+                guesses.append(1 if x[r1, c1] > x[r2, c2] else 0)
+
+            yhat.append(1 if np.mean(guesses) > 0.5 else 0)
+
+        yhat = np.array(yhat)
+
+        output.append(fPC(labels, yhat))
+
+    return output
+
 if __name__ == "__main__":
     testingFaces, testingLabels = loadData("test")
     trainingFaces, trainingLabels = loadData("train")
 
-    machine = stepwiseRegression(trainingFaces, trainingLabels, testingFaces, testingLabels)
+    results = [run_on_n_faces(n, trainingFaces, trainingLabels, testingFaces, testingLabels) for n in range(400, 2001, 200)]
 
-    # for _ in range(10000):
-    #     r1, c1 = random.randint(0, 23), random.randint(0, 23)
-    #     r2, c2 = random.randint(0, 23), random.randint(0, 23)
-    #     if not (r1 == r2 and c1 == c2):
-    #         predictors.append(make_predictor(r1, c1, r2, c2))
-
-    # print(testingFaces.shape)
-    # print(vectorize_images(testingFaces).shape)
-    #
-    # print(testingFaces[0][5][10])
-    # print(vectorize_images(testingFaces)[5 * 24 + 10][0])
-    #
-    # print(trainingLabels[0:9])
+    print("n\ttraining_accuracy\ttesting_accuracy")
+    for n, training_accuracy, testing_accuracy in results:
+        print(f"{n}, {training_accuracy}, {testing_accuracy}")
