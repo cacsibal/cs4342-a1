@@ -1,3 +1,5 @@
+import random
+
 import numpy as np
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
@@ -31,9 +33,12 @@ y: ground truth vector
 returns 
 """
 def measureAccuracyOfPredictors (predictors, X, y):
+    yhat = []
     for x in X:
         predictions = np.array([g_j(x) for g_j in predictors])
-        print(np.mean(predictions))
+        yhat.append(1 if np.mean(predictions) >= 0.5 else 0)
+
+    return fPC(y, yhat)
 
 def stepwiseRegression (trainingFaces, trainingLabels, testingFaces, testingLabels):
     show = False
@@ -64,18 +69,15 @@ if __name__ == "__main__":
     testingFaces, testingLabels = loadData("test")
     trainingFaces, trainingLabels = loadData("train")
 
-    # print(trainingLabels.shape)
-    # print(trainingFaces.shape)
-
     predictors = []
 
-    for r1 in range(24):
-        for c1 in range(24):
-            for r2 in range(24):
-                for c2 in range(24):
-                    predictors.append(make_predictor(r1, c1, r2, c2))
+    for _ in range(10000):
+        r1, c1 = random.randint(0, 23), random.randint(0, 23)
+        r2, c2 = random.randint(0, 23), random.randint(0, 23)
+        if not (r1 == r2 and c1 == c2):  # Skip same pixel
+            predictors.append(make_predictor(r1, c1, r2, c2))
 
-    print(measureAccuracyOfPredictors(predictors, testingFaces, testingLabels))
+    print(measureAccuracyOfPredictors(predictors, trainingFaces, trainingLabels))
 
     # print(testingFaces.shape)
     # print(vectorize_images(testingFaces).shape)
