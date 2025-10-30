@@ -49,6 +49,40 @@ print(P_x1)
 print(np.sum(P_x1))
 
 # finding P(x_2 | x_1)
+# bigram_counts[i, j] = count of (x_1=word_i, x_2=word_j)
+bigram_counts = np.zeros((NUM_WORDS, NUM_WORDS))
+
+for i, story in enumerate(dataset):
+    if i == ENOUGH_EXAMPLES:
+        break
+
+    words = story['text'].upper().replace(",", "").replace("\n", " ").replace('"', '').replace("!", " ").replace(".", " ").split(' ')
+    filteredWords = [w for w in words if w != ""]
+
+    if len(filteredWords) >= 2:
+        first_word = filteredWords[0]
+        second_word = filteredWords[1]
+
+        if first_word in wordToIdxMap:
+            idx1 = wordToIdxMap[first_word]
+        else:
+            idx1 = NUM_WORDS - 1
+
+        if second_word in wordToIdxMap:
+            idx2 = wordToIdxMap[second_word]
+        else:
+            idx2 = NUM_WORDS - 1
+
+        bigram_counts[idx1, idx2] += 1
+
+    P_x2_given_x1 = np.zeros((NUM_WORDS, NUM_WORDS))
+for i in range(NUM_WORDS):
+    row_sum = bigram_counts[i].sum()
+    if row_sum > 0:
+        P_x2_given_x1[i] = bigram_counts[i] / row_sum
+
+print(P_x2_given_x1.shape)
+print(P_x2_given_x1.sum(axis=1)[:10])
 
 for i, story in enumerate(dataset):
     if i == ENOUGH_EXAMPLES:
@@ -63,7 +97,30 @@ for i, story in enumerate(dataset):
             continue
         # TODO: process all the 3-grams in each sentence, but ignore any 3-gram if it contains 
         # a word that is not in topWords.
+        trigram_counts = np.zeros((NUM_WORDS, NUM_WORDS, NUM_WORDS))
 
+        #Filter out empty strings
+        filteredWords = [ w for w in words if w != "" ]
+
+        #Process all trigrams in sentence
+        for t in range(len(filteredWords) - 2):
+            word_t = filteredWords[t]
+            word_t1 = filteredWords[t + 1]
+            word_t2 = filteredWords[t + 2]
+
+            idx1 = wordToIdxMap[word_t]
+            idx2 = wordToIdxMap[word_t1]
+            idx3 = wordToIdxMap[word_t2]
+
+            # Increment the trigram count
+            trigram_counts[idx1, idx2, idx3] += 1
+
+P_xt2_given_xt_xt1 = np.zeros((NUM_WORDS, NUM_WORDS, NUM_WORDS))
+for i in range(NUM_WORDS):
+    for j in range(NUM_WORDS):
+        context_sum = trigram_counts[i, j, :].sum()
+        if context_sum > 0:
+            P_xt2_given_xt_xt1[i, j] = trigram_counts[i, j] / context_sum
 # TODO: normalize the probability distributions.
 
 # TASK 2 (testing/inference): use the probability distributions to generate 100 new "sentences".
