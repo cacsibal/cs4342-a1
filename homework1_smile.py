@@ -62,7 +62,7 @@ def stepwiseRegression (trainingFaces, trainingLabels, testingFaces, testingLabe
 
         for i, g_j in enumerate(all_predictors):
             if i % 10000 == 0:
-                print(i)
+                print(f"{i} done, {100.0 * i / len(all_predictors):.2f}%")
 
             test_ensemble = selected_predictors + [g_j]
 
@@ -100,6 +100,8 @@ def loadData (which):
     return faces, labels
 
 def run_on_n_faces(n, trainingFaces, trainingLabels, testingFaces, testingLabels):
+    print(f"running on {n} faces")
+
     machine = stepwiseRegression(trainingFaces[:n], trainingLabels[:n], testingFaces, testingLabels)
 
     output = [n]
@@ -115,7 +117,6 @@ def run_on_n_faces(n, trainingFaces, trainingLabels, testingFaces, testingLabels
             yhat.append(1 if np.mean(guesses) > 0.5 else 0)
 
         yhat = np.array(yhat)
-
         output.append(fPC(labels, yhat))
 
     return output
