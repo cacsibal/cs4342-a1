@@ -22,6 +22,34 @@ wordToIdxMap = { topWords[i]:i for i in range(NUM_WORDS) }  # map from a word to
 
 # TASK 1 (training): estimate the three probability distributions P(x_1), P(x_2 | x_1), and P(x_{t+2} | x_t, x_{t+1}).
 # TODO: initialize np.array's to represent the probability distributions
+
+# finding P(x_1)
+first_word_counts = np.zeros(NUM_WORDS)
+
+for i, story in enumerate(dataset):
+    if i == ENOUGH_EXAMPLES:
+        break
+
+    words = story['text'].upper().replace(",", "").replace("\n", " ").replace('"', '').replace("!", " ").replace(".", " ").split(' ')
+    filteredWords = [w for w in words if w != ""]
+
+    if len(filteredWords) > 0:
+        first_word = filteredWords[0]
+
+        if first_word in wordToIdxMap:
+            idx = wordToIdxMap[first_word]
+        else:
+            idx = NUM_WORDS - 1
+
+        first_word_counts[idx] += 1
+
+P_x1 = first_word_counts / first_word_counts.sum()
+
+print(P_x1)
+print(np.sum(P_x1))
+
+# finding P(x_2 | x_1)
+
 for i, story in enumerate(dataset):
     if i == ENOUGH_EXAMPLES:
         break
