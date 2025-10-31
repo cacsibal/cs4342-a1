@@ -84,6 +84,8 @@ for i in range(NUM_WORDS):
 print(P_x2_given_x1.shape)
 print(P_x2_given_x1.sum(axis=1)[:10])
 
+trigram_counts = np.zeros((NUM_WORDS, NUM_WORDS, NUM_WORDS))
+
 for i, story in enumerate(dataset):
     if i == ENOUGH_EXAMPLES:
         break
@@ -97,7 +99,7 @@ for i, story in enumerate(dataset):
             continue
         # TODO: process all the 3-grams in each sentence, but ignore any 3-gram if it contains 
         # a word that is not in topWords.
-        trigram_counts = np.zeros((NUM_WORDS, NUM_WORDS, NUM_WORDS))
+       
 
         #Filter out empty strings
         filteredWords = [ w for w in words if w != "" ]
@@ -115,14 +117,15 @@ for i, story in enumerate(dataset):
             # Increment the trigram count
             trigram_counts[idx1, idx2, idx3] += 1
 
+
+# TODO: normalize the probability distributions.
 P_xt2_given_xt_xt1 = np.zeros((NUM_WORDS, NUM_WORDS, NUM_WORDS))
 for i in range(NUM_WORDS):
     for j in range(NUM_WORDS):
         context_sum = trigram_counts[i, j, :].sum()
         if context_sum > 0:
             P_xt2_given_xt_xt1[i, j] = trigram_counts[i, j] / context_sum
-# TODO: normalize the probability distributions.
-
+            
 # TASK 2 (testing/inference): use the probability distributions to generate 100 new "sentences".
 # Note: given this relatively weak 3-gram model, not all sentences will be grammatical.
 # This is ok for this assignment.
