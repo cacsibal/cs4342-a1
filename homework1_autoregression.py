@@ -45,8 +45,8 @@ for i, story in enumerate(dataset):
 
 P_x1 = first_word_counts / first_word_counts.sum()
 
-print(P_x1)
-print(np.sum(P_x1))
+# print(P_x1)
+# print(np.sum(P_x1))
 
 # finding P(x_2 | x_1)
 # bigram_counts[i, j] = count of (x_1=word_i, x_2=word_j)
@@ -81,8 +81,8 @@ for i in range(NUM_WORDS):
     if row_sum > 0:
         P_x2_given_x1[i] = bigram_counts[i] / row_sum
 
-print(P_x2_given_x1.shape)
-print(P_x2_given_x1.sum(axis=1)[:10])
+# print(P_x2_given_x1.shape)
+# print(P_x2_given_x1.sum(axis=1)[:10])
 
 trigram_counts = np.zeros((NUM_WORDS, NUM_WORDS, NUM_WORDS))
 
@@ -131,3 +131,48 @@ for i in range(NUM_WORDS):
 # This is ok for this assignment.
 # To select from any probability distribution, you can use np.random.choice.
 # TODO ...
+
+print("done training:")
+for i in range(100):
+    sentence = []
+
+    x_1_index = -1
+    x_1 = "."
+    while x_1 == ".":
+        x_1_index = np.random.choice(range(NUM_WORDS), p=P_x1)
+        x_1 = topWords[x_1_index]
+    sentence.append(x_1)
+
+    x_2_index = -1
+    x_2 = "."
+    while x_2 == ".":
+        x_2_index = np.random.choice(range(NUM_WORDS), p=P_x2_given_x1[x_1_index, :])
+        x_2 = topWords[x_2_index]
+    sentence.append(x_2)
+
+    prev_prev_index = x_1_index
+    prev_index = x_2_index
+
+    while True:
+        distribution = P_xt2_given_xt_xt1[prev_prev_index, prev_index, :]
+        if distribution.sum() == 0:
+            distribution = np.ones(NUM_WORDS) / NUM_WORDS
+
+        next_index = np.random.choice(range(NUM_WORDS), p=distribution)
+        next_word = topWords[next_index]
+        sentence.append(next_word)
+
+        if next_word == ".":
+            break
+
+        prev_prev_index = prev_index
+        prev_index = next_index
+
+    print(f"{i + 1}: {' '.join(sentence)}")
+
+most_common_first_word_index = np.argmax(first_word_counts)
+most_common_first_word = topWords[most_common_first_word_index]
+count = first_word_counts[most_common_first_word_index]
+
+print(f"Most common first word: '{most_common_first_word}' with {count} occurrences")
+print(f"Probability: {P_x1[most_common_first_word_index]:.4f}")
