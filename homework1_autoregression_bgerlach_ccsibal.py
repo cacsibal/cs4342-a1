@@ -173,6 +173,3 @@ for i in range(100):
 most_common_first_word_index = np.argmax(first_word_counts)
 most_common_first_word = topWords[most_common_first_word_index]
 count = first_word_counts[most_common_first_word_index]
-
-print(f"Most common first word: '{most_common_first_word}' with {count} occurrences")
-print(f"Probability: {P_x1[most_common_first_word_index]:.4f}")

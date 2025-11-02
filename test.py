@@ -1,5 +1,5 @@
 import numpy as np
-import homework1_numpy as hw
+import homework1_numpy_bgerlach_ccsibal as hw
 
 A = np.array([[1, 2], [3, 4]])
 B = np.array([[5, 6], [7, 8]])

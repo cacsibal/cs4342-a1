@@ -61,7 +61,7 @@ def stepwiseRegression (trainingFaces, trainingLabels, testingFaces, testingLabe
         best_accuracy = 0
 
         for i, g_j in enumerate(all_predictors):
-            if i % 10000 == 0:
+            if i % 100000 == 0:
                 print(f"{i} done, {100.0 * i / len(all_predictors):.2f}%")
 
             test_ensemble = selected_predictors + [g_j]
@@ -104,7 +104,7 @@ def run_on_n_faces(n, trainingFaces, trainingLabels, testingFaces, testingLabels
 
     machine = stepwiseRegression(trainingFaces[:n], trainingLabels[:n], testingFaces, testingLabels)
 
-    output = [n]
+    output = [machine, n]
 
     for faces, labels in [(trainingFaces, trainingLabels), (testingFaces, testingLabels)]:
         yhat = []
@@ -125,8 +125,27 @@ if __name__ == "__main__":
     testingFaces, testingLabels = loadData("test")
     trainingFaces, trainingLabels = loadData("train")
 
-    results = [run_on_n_faces(n, trainingFaces, trainingLabels, testingFaces, testingLabels) for n in range(400, 2001, 200)]
+    # results = [run_on_n_faces(n, trainingFaces, trainingLabels, testingFaces, testingLabels) for n in range(400, 2001, 200)]
 
-    print("n\ttraining_accuracy\ttesting_accuracy")
-    for n, training_accuracy, testing_accuracy in results:
-        print(f"{n}, {training_accuracy}, {testing_accuracy}")
+    # print("n\ttraining_accuracy\ttesting_accuracy")
+    # for _, n, training_accuracy, testing_accuracy in results:
+    #     print(f"{n}, {training_accuracy}, {testing_accuracy}")
+
+
+
+    machine = stepwiseRegression(trainingFaces, trainingLabels, testingFaces, testingLabels)
+    edge_colors = ['b', 'g', 'r', 'c', 'm', 'y']
+
+    img = testingFaces[0, :, :]
+    fig, ax = plt.subplots()
+    ax.imshow(img, cmap='gray')
+
+    for idx, (r1, c1, r2, c2) in enumerate(machine):
+        rect1 = patches.Rectangle((c1 - 0.5, r1 - 0.5), 1, 1, linewidth=2,
+                                  edgecolor=edge_colors[idx], facecolor='none')
+        ax.add_patch(rect1)
+        rect2 = patches.Rectangle((c2 - 0.5, r2 - 0.5), 1, 1, linewidth=2,
+                                  edgecolor=edge_colors[idx], facecolor='none')
+        ax.add_patch(rect2)
+
+    plt.show()
